@@ -45,3 +45,34 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+
+## Folders Structure
+src/app/
+├── core/                 # Elementos globales (se instancian una sola vez)
+│   ├── guards/           # Protección de rutas (ej. para que no entren sin login)
+│   ├── interceptors/     # Para inyectar el token de autenticación en peticiones HTTP
+│   ├── layout/           # Componentes estructurales (Navbar, Sidebar)
+│   └── services/         # Servicios globales (ej. AuthService)
+│
+├── shared/               # Componentes y utilidades reutilizables en toda la app
+│   ├── components/       # Botones, modales, etiquetas de estado (Pendiente, En Progreso)[cite: 2]
+│   ├── interfaces/       # Modelos TypeScript (User, Project, Ticket)[cite: 2]
+│   └── utils/            # Funciones de ayuda y validadores de formularios
+│
+└── features/             # Los módulos principales del negocio según el PDF
+    │
+    ├── auth/             # Autenticación[cite: 2]
+    │   ├── components/   # Formularios internos
+    │   ├── pages/        # Pantalla de login y registro[cite: 2]
+    │   └── services/     # Llamadas a la API de autenticación
+    │
+    ├── projects/         # Gestión de Proyectos[cite: 2]
+    │   ├── components/   # Tarjetas de proyecto, modales de creación/edición[cite: 2]
+    │   ├── pages/        # Listado de proyectos y vista detalle[cite: 2]
+    │   └── services/     # Consumo de la API de proyectos[cite: 2]
+    │
+    └── tickets/          # Gestión y Tablero de Tickets[cite: 2]
+        ├── components/   # Tarjeta individual de ticket, formulario de ticket[cite: 2]
+        ├── pages/        # Tablero de trabajo (Kanban) agrupado por estados[cite: 2]
+        └── services/     # Consumo de la API para mover estados y asignar responsables[cite: 2]

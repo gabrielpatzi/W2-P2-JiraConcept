@@ -1,0 +1,53 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="card-title text-center mb-4">Crear Cuenta</h3>
+          
+          @if (errorMessage()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          @if (successMessage()) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ successMessage() }}
+            </div>
+          }
+          
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Nombre Completo</label>
+              <input type="text" class="form-control" formControlName="name" placeholder="Tu nombre" [disabled]="isLoading()">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Correo Electrónico</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="ejemplo@correo.com" [disabled]="isLoading()">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" formControlName="password" placeholder="Mínimo 6 caracteres" [disabled]="isLoading()">
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" [disabled]="registerForm.invalid || isLoading()">
+              @if (isLoading()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Registrando...
+              } @else {
+                Registrarse
+              }
+            </button>
+          </form>
+
+          <div class="text-center mt-3">
+            <small>¿Ya tienes cuenta? <a routerLink="/login" [class.disabled]="isLoading()">Inicia sesión</a></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
