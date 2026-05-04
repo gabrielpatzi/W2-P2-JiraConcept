@@ -119,28 +119,66 @@
           </svg>
         </button>
       </div>
-      <p class="modal-subtitle">Ingresa el ID del usuario que deseas agregar al proyecto.</p>
+      <p class="modal-subtitle">Busca un usuario por nombre o correo y selecciónalo para agregarlo al proyecto.</p>
 
       @if (addMemberError) {
         <div class="alert alert-error">{{ addMemberError }}</div>
       }
 
       <form [formGroup]="addMemberForm" (ngSubmit)="onAddMember()">
+        <input type="hidden" formControlName="memberId">
+
         <div class="form-group">
-          <label class="form-label">ID del Usuario</label>
-          <input 
-            type="number" 
-            class="form-input" 
-            formControlName="memberId"
-            placeholder="Ej: 5"
-            [class.invalid]="addMemberForm.get('memberId')?.invalid && addMemberForm.get('memberId')?.touched">
-          @if (addMemberForm.get('memberId')?.hasError('required') && addMemberForm.get('memberId')?.touched) {
-            <span class="field-error">El ID del usuario es requerido</span>
-          }
+          <label class="form-label">Buscar usuario</label>
+          <input
+            type="text"
+            class="form-input"
+            [value]="searchQuery"
+            (input)="searchQuery = $any($event.target).value; filterUsers()"
+            placeholder="Nombre o correo"
+          >
         </div>
+
+        @if (isLoadingUsers) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando usuarios disponibles...</p>
+          </div>
+        } @else if (usersLoadError) {
+          <div class="alert alert-error">{{ usersLoadError }}</div>
+        } @else {
+          @if (filteredUsers.length === 0) {
+            <div class="empty-members">
+              <p>No se encontraron usuarios coincidentes.</p>
+            </div>
+          } @else {
+            <div class="user-search-results">
+              @for (user of filteredUsers; track user.userId) {
+                <button
+                  type="button"
+                  class="user-card"
+                  [class.selected]="selectedUser?.userId === user.userId"
+                  (click)="selectUser(user)">
+                  <div>
+                    <span class="user-name">{{ user.name }}</span>
+                    <span class="user-email">{{ user.email }}</span>
+                  </div>
+                  @if (selectedUser?.userId === user.userId) {
+                    <span class="user-selected-label">Seleccionado</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        }
+
+        @if (addMemberForm.get('memberId')?.invalid && addMemberForm.get('memberId')?.touched) {
+          <span class="field-error">Selecciona un usuario válido de la lista.</span>
+        }
+
         <div class="modal-actions">
           <button type="button" class="btn-cancel" (click)="closeAddMemberModal()">Cancelar</button>
-          <button type="submit" class="btn-submit" [disabled]="addMemberForm.invalid || isAddingMember">
+          <button type="submit" class="btn-submit" [disabled]="addMemberForm.invalid || !selectedUser || isAddingMember">
             @if (isAddingMember) { Agregando... } @else { Agregar Miembro }
           </button>
         </div>

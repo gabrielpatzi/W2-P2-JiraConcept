@@ -21,6 +21,7 @@ export class ProjectListComponent implements OnInit {
   projects: ProjectWithStatus[] = [];
   filteredProjects: ProjectWithStatus[] = [];
   searchTerm = '';
+  isLoadingProjects = true;
   showCreateModal = false;
   modalMode: 'create' | 'edit' = 'create';
   selectedProjectId: string | null = null;
@@ -33,6 +34,7 @@ export class ProjectListComponent implements OnInit {
   }
  
   loadProjects() {
+    this.isLoadingProjects = true;
     this.projectService.getProjects().subscribe({
       next: (response) => {
         const allProjects = [
@@ -46,10 +48,12 @@ export class ProjectListComponent implements OnInit {
           avatarColor: this.avatarColors[index % this.avatarColors.length]
         }));
  
-        this.filteredProjects = this.projects;
+        this.filteredProjects = [...this.projects];
+        this.isLoadingProjects = false;
       },
       error: (err) => {
         console.error('Error cargando proyectos:', err);
+        this.isLoadingProjects = false;
       }
     });
   }
@@ -121,7 +125,10 @@ export class ProjectListComponent implements OnInit {
   }
  
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
-  }
+  console.log('createdAt recibido:', dateString); // ← para diagnosticar
+  if (!dateString) return 'Sin fecha';
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return 'Fecha inválida: ' + dateString;
+  return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+}
 }

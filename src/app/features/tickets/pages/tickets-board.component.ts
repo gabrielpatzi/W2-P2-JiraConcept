@@ -192,7 +192,9 @@ export class TicketsBoardComponent implements OnInit {
 
   formatDate(d: string) {
     if (!d) return '';
-    return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+    const date = new Date(d);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   private showAlert(msg: string, type: 'success' | 'error') {

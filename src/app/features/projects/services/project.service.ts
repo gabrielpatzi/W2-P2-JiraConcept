@@ -7,7 +7,8 @@ import {
   UpdateProjectPayload,
   GetProjectsResponse 
 } from '../../../shared/interfaces/project.interface';
- 
+import { User } from '../../../shared/interfaces';
+
 const API_URL = 'http://localhost:3000/projects';
  
 @Injectable({
@@ -34,6 +35,10 @@ export class ProjectService {
  
   addProjectMember(projectId: number, memberId: number): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${API_URL}/${projectId}/member/${memberId}`, {});
+  }
+
+  getAvailableUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${API_URL}/users/available`);
   }
 
   removeProjectMember(projectId: number, memberId: number): Observable<{ message: string }> {

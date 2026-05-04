@@ -150,3 +150,74 @@
 }
 .btn-submit:hover:not(:disabled) { background: #4338CA; }
 .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.user-search-results {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: #F8FAFC;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.user-card:hover {
+  background: #EEF2FF;
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+.user-card.selected {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+}
+
+.user-card div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.user-email {
+  font-size: 13px;
+  color: #6B7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-selected-label {
+  font-size: 12px;
+  color: #2563EB;
+  font-weight: 700;
+}
+
+.empty-members p {
+  margin: 0;
+  color: #6B7280;
+}
+
+.loading-state p {
+  margin: 0;
+}
+

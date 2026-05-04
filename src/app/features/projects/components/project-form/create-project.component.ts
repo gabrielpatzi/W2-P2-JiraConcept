@@ -1,6 +1,6 @@
 import { Component, inject, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -25,9 +25,6 @@ export class CreateProjectComponent implements OnInit {
     description: ['', [Validators.maxLength(100)]]
   });
 
-  searchEmailControl = new FormControl('');
-
-  collaborators: { email: string; avatar: string }[] = [];
   errorMessage = '';
   successMessage = '';
   isSubmitting = false;
@@ -39,16 +36,13 @@ export class CreateProjectComponent implements OnInit {
   }
 
   loadProjectForEdit(projectId: string) {
-    // Aquí cargarías los datos del proyecto desde el servicio
-    // Por ahora, simular con datos de ejemplo
     this.projectService.getProject(projectId).subscribe({
       next: (project) => {
+        const projectData = project.projectDetails || project;
         this.projectForm.patchValue({
-          name: project.name,
-          description: project.description
+          name: projectData.name,
+          description: projectData.description
         });
-        // Cargar colaboradores si existen
-        this.collaborators = project.collaborators || [];
       },
       error: (err) => {
         console.error('Error cargando proyecto:', err);
@@ -64,8 +58,7 @@ export class CreateProjectComponent implements OnInit {
       this.isSubmitting = true;
 
       const projectData = {
-        ...this.projectForm.value,
-        collaborators: this.collaborators
+        ...this.projectForm.value
       };
 
       const operation = this.isEditing
@@ -103,44 +96,15 @@ export class CreateProjectComponent implements OnInit {
     }
   }
 
-  addCollaborator() {
-    const email = this.searchEmailControl.value?.trim();
-    if (email && this.isValidEmail(email)) {
-      if (!this.collaborators.find(c => c.email === email)) {
-        this.collaborators.push({
-          email: email,
-          avatar: this.getAvatarInitials(email)
-        });
-        this.searchEmailControl.setValue('');
-      }
-    }
-  }
-
-  removeCollaborator(email: string) {
-    this.collaborators = this.collaborators.filter(c => c.email !== email);
-  }
-
   close() {
     this.closeModal.emit();
   }
 
   resetForm() {
     this.projectForm.reset();
-    this.searchEmailControl.setValue('');
-    this.collaborators = [];
     this.errorMessage = '';
     this.successMessage = '';
     this.isSubmitting = false;
-  }
-
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  private getAvatarInitials(email: string): string {
-    const name = email.split('@')[0];
-    return name.substring(0, 2).toUpperCase();
   }
 
   get name() { return this.projectForm.get('name'); }

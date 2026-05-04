@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { User } from '../../../../shared/interfaces';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -20,6 +21,13 @@ export class ProjectDetailComponent implements OnInit {
   projectId!: number;
   projectDetails: any = null;
   projectMembers: any[] = [];
+  availableUsers: User[] = [];
+  filteredUsers: User[] = [];
+  searchQuery = '';
+  selectedUser: User | null = null;
+  isLoadingUsers = false;
+  usersLoadError = '';
+
   isLoading = signal(true);
   errorMessage = signal('');
   successMessage = signal('');
@@ -55,8 +63,14 @@ export class ProjectDetailComponent implements OnInit {
 
   openAddMemberModal() {
     this.addMemberForm.reset();
+    this.selectedUser = null;
+    this.searchQuery = '';
+    this.availableUsers = [];
+    this.filteredUsers = [];
+    this.usersLoadError = '';
     this.addMemberError = '';
     this.showAddMemberModal = true;
+    this.loadAvailableUsers();
   }
 
   closeAddMemberModal() {
@@ -64,11 +78,52 @@ export class ProjectDetailComponent implements OnInit {
     this.addMemberError = '';
   }
 
+  loadAvailableUsers() {
+    this.isLoadingUsers = true;
+    this.projectService.getAvailableUsers().subscribe({
+      next: (users) => {
+        this.availableUsers = users;
+        this.filteredUsers = [...users];
+        this.isLoadingUsers = false;
+      },
+      error: (error) => {
+        console.error('Error cargando usuarios disponibles:', error);
+        this.usersLoadError = 'No se pudieron cargar los usuarios disponibles. Intenta de nuevo.';
+        this.isLoadingUsers = false;
+      }
+    });
+  }
+
+  filterUsers() {
+    const query = this.searchQuery.trim().toLowerCase();
+    if (!query) {
+      this.filteredUsers = [...this.availableUsers];
+      return;
+    }
+
+    this.filteredUsers = this.availableUsers.filter((user) => {
+      return (
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
+      );
+    });
+  }
+
+  selectUser(user: User) {
+    this.selectedUser = user;
+    this.addMemberForm.patchValue({ memberId: user.userId });
+  }
+
   onAddMember() {
     if (this.addMemberForm.valid && !this.isAddingMember) {
+      if (!this.selectedUser) {
+        this.addMemberError = 'Selecciona un usuario de la lista para agregarlo.';
+        return;
+      }
+
       this.isAddingMember = true;
       this.addMemberError = '';
-      const memberId = Number(this.addMemberForm.value.memberId);
+      const memberId = this.selectedUser.userId;
       
       this.projectService.addProjectMember(this.projectId, memberId).subscribe({
         next: () => {
@@ -118,6 +173,8 @@ export class ProjectDetailComponent implements OnInit {
 
   formatDate(dateString: string): string {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 }

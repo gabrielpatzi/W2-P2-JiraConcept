@@ -67,10 +67,20 @@
  
   <!-- Projects Grid -->
   <div class="projects-grid" [class.list-view]="viewMode === 'list'">
-    @for (project of filteredProjects; track project.projectId) {
-      <div class="project-card">
-        <!-- Card Header -->
-        <div class="card-header">
+    @if (isLoadingProjects) {
+      <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="4"/>
+          <path d="M32 20v24M20 32h24" stroke="#E5E7EB" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <h3>Cargando proyectos...</h3>
+        <p>Espera un momento mientras obtenemos tus proyectos.</p>
+      </div>
+    } @else {
+      @for (project of filteredProjects; track project.projectId) {
+        <div class="project-card">
+          <!-- Card Header -->
+          <div class="card-header">
           <div class="project-avatar" [style.background-color]="project.avatarColor">
             {{ getProjectInitials(project.name) }}
           </div>
@@ -85,12 +95,14 @@
           <p class="project-description">{{ project.description }}</p>
  
           <div class="project-meta">
-            <div class="meta-item">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1v6l4 2M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <span>Created: {{ formatDate(project.createdAt) }}</span>
-            </div>
+            @if (formatDate(project.createdAt)) {
+              <div class="meta-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1v6l4 2M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>Creado: {{ formatDate(project.createdAt) }}</span>
+              </div>
+            }
  
             <div class="meta-item">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -120,17 +132,17 @@
       </div>
     }
  
-    @if (filteredProjects.length === 0) {
+    @if (!isLoadingProjects && filteredProjects.length === 0) {
       <div class="empty-state">
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
           <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="4"/>
           <path d="M32 20v24M20 32h24" stroke="#E5E7EB" stroke-width="4" stroke-linecap="round"/>
         </svg>
-        <h3>No projects found</h3>
-        <p>Try adjusting your search or create a new project</p>
+        <h3>No se encontraron proyectos</h3>
+        <p>Revisa tu búsqueda o crea un nuevo proyecto.</p>
       </div>
     }
-  </div>
+  }
 </div>
  
 @if (showCreateModal) {

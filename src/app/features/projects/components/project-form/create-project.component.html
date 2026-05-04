@@ -80,48 +80,6 @@
         }
       </div>
 
-      <!-- Colaboradores -->
-      <div class="form-group">
-        <label class="form-label">Añadir/Eliminar Colaboradores</label>
-
-        <div class="collaborator-input-group">
-          <input
-            type="email"
-            class="form-input"
-            [formControl]="searchEmailControl"
-            placeholder="Buscar por correo electrónico...">
-          <button
-            type="button"
-            class="btn-add-collaborator"
-            (click)="addCollaborator()"
-            [disabled]="!searchEmailControl.value?.trim()">
-            Añadir
-          </button>
-        </div>
-
-        <!-- Lista de colaboradores -->
-        @if (collaborators.length > 0) {
-          <div class="collaborators-list">
-            @for (collaborator of collaborators; track collaborator.email) {
-              <div class="collaborator-chip">
-                <div class="collaborator-avatar">
-                  {{ collaborator.avatar }}
-                </div>
-                <span class="collaborator-email">{{ collaborator.email }}</span>
-                <button
-                  type="button"
-                  class="btn-remove-collaborator"
-                  (click)="removeCollaborator(collaborator.email)">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>
-            }
-          </div>
-        }
-      </div>
-
       <!-- Actions -->
       <div class="modal-actions">
         <button
