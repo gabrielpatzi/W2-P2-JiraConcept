@@ -125,13 +125,12 @@
   </div>
 </div>
  
-<!-- Create Project Modal (placeholder, lo crearemos después) -->
 @if (showCreateModal) {
-  <div class="modal-overlay" (click)="closeCreateModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <h2>Create New Project</h2>
-      <p>Modal content coming soon...</p>
-      <button class="btn-primary" (click)="closeCreateModal()">Close</button>
-    </div>
-  </div>
+  <app-create-project
+    [isEditing]="modalMode === 'edit'"
+    [projectId]="selectedProjectId"
+    (closeModal)="closeCreateModal()"
+    (projectCreated)="onProjectSaved()"
+    (projectUpdated)="onProjectSaved()">
+  </app-create-project>
 }

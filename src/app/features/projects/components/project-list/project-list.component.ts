@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProjectWithStatus, ProjectStatus } from '../../../../shared/interfaces/project.interface';
+import { CreateProjectComponent } from '../project-form/create-project.component';
  
 @Component({
   selector: 'app-project-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CreateProjectComponent],
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.css'
 })
@@ -19,6 +20,8 @@ export class ProjectListComponent implements OnInit {
   filteredProjects: ProjectWithStatus[] = [];
   searchTerm = '';
   showCreateModal = false;
+  modalMode: 'create' | 'edit' = 'create';
+  selectedProjectId: string | null = null;
   viewMode: 'grid' | 'list' = 'grid';
  
   // Colores para los avatares de proyectos
@@ -66,11 +69,14 @@ export class ProjectListComponent implements OnInit {
   }
  
   openCreateModal() {
+    this.modalMode = 'create';
+    this.selectedProjectId = null;
     this.showCreateModal = true;
   }
  
   closeCreateModal() {
     this.showCreateModal = false;
+    this.selectedProjectId = null;
   }
  
   viewProjectDetails(projectId: number) {
@@ -79,8 +85,14 @@ export class ProjectListComponent implements OnInit {
   }
  
   editProject(projectId: number) {
-    // Por ahora solo log, después implementaremos el modal de edición
-    console.log('Editar proyecto:', projectId);
+    this.modalMode = 'edit';
+    this.selectedProjectId = projectId.toString();
+    this.showCreateModal = true;
+  }
+ 
+  onProjectSaved() {
+    this.closeCreateModal();
+    this.loadProjects();
   }
  
   viewTickets(projectId: number) {

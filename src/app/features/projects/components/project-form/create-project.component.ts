@@ -22,7 +22,7 @@ export class CreateProjectComponent implements OnInit {
 
   projectForm: FormGroup = this.fb.group({
     name: ['', [Validators.required]],
-    description: ['', [Validators.required, Validators.maxLength(100)]]
+    description: ['', [Validators.maxLength(100)]]
   });
 
   searchEmailControl = new FormControl('');
