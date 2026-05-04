@@ -1,0 +1,152 @@
+.detail-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.back-nav { margin-bottom: 24px; }
+.btn-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: none; color: #6B7280;
+  font-size: 14px; cursor: pointer; padding: 8px 0;
+  transition: color 0.2s;
+}
+.btn-back:hover { color: #111827; }
+
+.loading-state, .error-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 64px; gap: 16px; color: #6B7280;
+}
+.spinner {
+  width: 40px; height: 40px; border: 3px solid #E5E7EB;
+  border-top-color: #4F46E5; border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.alert {
+  padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;
+  font-size: 14px; font-weight: 500;
+}
+.alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.alert-error { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+
+/* Project Header Card */
+.project-header-card {
+  background: white; border-radius: 16px; padding: 32px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.project-header-left { display: flex; gap: 20px; align-items: flex-start; }
+.project-avatar-large {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: linear-gradient(135deg, #4F46E5, #7C3AED);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 22px; font-weight: 700; flex-shrink: 0;
+}
+.project-title { font-size: 26px; font-weight: 700; color: #111827; margin: 0 0 8px; }
+.project-description { color: #6B7280; font-size: 15px; margin: 0 0 12px; }
+.project-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.meta-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #F3F4F6; border-radius: 20px; padding: 5px 12px;
+  font-size: 13px; color: #6B7280;
+}
+.btn-tickets {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #4F46E5; color: white; border: none; border-radius: 10px;
+  padding: 12px 20px; font-size: 14px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: background 0.2s, transform 0.1s;
+}
+.btn-tickets:hover { background: #4338CA; transform: translateY(-1px); }
+
+/* Section Card */
+.section-card {
+  background: white; border-radius: 16px; padding: 28px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 18px; font-weight: 600; color: #111827; margin: 0;
+}
+.btn-add-member {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #EEF2FF; color: #4F46E5; border: 1px solid #C7D2FE;
+  border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-add-member:hover { background: #E0E7FF; }
+
+.empty-members { text-align: center; color: #9CA3AF; padding: 32px 0; }
+
+.members-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;
+}
+.member-card {
+  display: flex; align-items: center; gap: 12px;
+  background: #F9FAFB; border-radius: 12px; padding: 14px 16px;
+  border: 1px solid #F3F4F6;
+}
+.member-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, #818CF8, #C084FC);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 14px; font-weight: 700; flex-shrink: 0;
+}
+.member-info { flex: 1; min-width: 0; }
+.member-name { display: block; font-size: 14px; font-weight: 600; color: #111827; }
+.member-email { display: block; font-size: 12px; color: #6B7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-id { display: block; font-size: 11px; color: #9CA3AF; }
+.btn-remove-member {
+  background: none; border: none; color: #9CA3AF; cursor: pointer;
+  padding: 6px; border-radius: 6px; transition: all 0.2s; flex-shrink: 0;
+}
+.btn-remove-member:hover { background: #FEE2E2; color: #DC2626; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 16px;
+}
+.modal-box {
+  background: white; border-radius: 16px; padding: 32px;
+  width: 100%; max-width: 440px; box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+}
+.modal-header h3 { font-size: 20px; font-weight: 700; color: #111827; margin: 0; }
+.modal-subtitle { color: #6B7280; font-size: 14px; margin: 0 0 20px; }
+.btn-close-modal {
+  background: none; border: none; color: #9CA3AF; cursor: pointer;
+  padding: 4px; border-radius: 6px; transition: color 0.2s;
+}
+.btn-close-modal:hover { color: #111827; }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-size: 14px; font-weight: 500; color: #374151; margin-bottom: 6px; }
+.form-input {
+  width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB;
+  border-radius: 8px; font-size: 15px; outline: none; box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: #4F46E5; }
+.form-input.invalid { border-color: #EF4444; }
+.field-error { font-size: 12px; color: #EF4444; margin-top: 4px; display: block; }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 10px 20px; border: 1.5px solid #E5E7EB; background: white;
+  border-radius: 8px; font-size: 14px; cursor: pointer; color: #374151;
+}
+.btn-submit {
+  padding: 10px 20px; background: #4F46E5; color: white; border: none;
+  border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-submit:hover:not(:disabled) { background: #4338CA; }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }

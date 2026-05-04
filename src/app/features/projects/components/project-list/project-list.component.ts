@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ProjectService } from '../../services/project.service';
 import { ProjectWithStatus, ProjectStatus } from '../../../../shared/interfaces/project.interface';
 import { CreateProjectComponent } from '../project-form/create-project.component';
+import { AuthService } from '../../../auth/services/auth.service';
  
 @Component({
   selector: 'app-project-list',
@@ -14,6 +15,7 @@ import { CreateProjectComponent } from '../project-form/create-project.component
 })
 export class ProjectListComponent implements OnInit {
   private projectService = inject(ProjectService);
+  private authService = inject(AuthService);
   private router = inject(Router);
  
   projects: ProjectWithStatus[] = [];
@@ -24,8 +26,7 @@ export class ProjectListComponent implements OnInit {
   selectedProjectId: string | null = null;
   viewMode: 'grid' | 'list' = 'grid';
  
-  // Colores para los avatares de proyectos
-  private avatarColors = ['#E8EAF6', '#E1F5DC', '#FFF4E6', '#FCE4EC'];
+  private avatarColors = ['#E8EAF6', '#E1F5DC', '#FFF4E6', '#FCE4EC', '#E0F2FE', '#FDF4FF'];
  
   ngOnInit() {
     this.loadProjects();
@@ -34,18 +35,14 @@ export class ProjectListComponent implements OnInit {
   loadProjects() {
     this.projectService.getProjects().subscribe({
       next: (response) => {
-        // Combinar proyectos propios y colaborativos
         const allProjects = [
-          ...response.ownerProjects,
-          ...response.colabProjects
+          ...response.ownerProjects.map(p => ({ ...p, isOwner: true })),
+          ...response.colabProjects.map(p => ({ ...p, isOwner: false }))
         ];
  
-        // Enriquecer con datos adicionales para la UI
         this.projects = allProjects.map((project, index) => ({
           ...project,
           status: this.getRandomStatus(),
-          memberCount: Math.floor(Math.random() * 5) + 1, // Placeholder
-          ticketCount: Math.floor(Math.random() * 10) + 3, // Placeholder
           avatarColor: this.avatarColors[index % this.avatarColors.length]
         }));
  
@@ -53,7 +50,6 @@ export class ProjectListComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error cargando proyectos:', err);
-        alert('Error al cargar los proyectos');
       }
     });
   }
@@ -61,7 +57,6 @@ export class ProjectListComponent implements OnInit {
   onSearch(event: Event) {
     const target = event.target as HTMLInputElement;
     this.searchTerm = target.value.toLowerCase();
-    
     this.filteredProjects = this.projects.filter(project =>
       project.name.toLowerCase().includes(this.searchTerm) ||
       project.description.toLowerCase().includes(this.searchTerm)
@@ -80,8 +75,7 @@ export class ProjectListComponent implements OnInit {
   }
  
   viewProjectDetails(projectId: number) {
-    // Por ahora solo navega, después implementaremos el modal de detalles
-    console.log('Ver detalles del proyecto:', projectId);
+    this.router.navigate(['/projects', projectId]);
   }
  
   editProject(projectId: number) {
@@ -96,19 +90,17 @@ export class ProjectListComponent implements OnInit {
   }
  
   viewTickets(projectId: number) {
-    // Navegar al tablero de tickets de este proyecto
     this.router.navigate(['/projects', projectId, 'tickets']);
   }
  
-  toggleViewMode() {
-    this.viewMode = this.viewMode === 'grid' ? 'list' : 'grid';
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
  
   getProjectInitials(name: string): string {
     const words = name.split(' ');
-    if (words.length >= 2) {
-      return (words[0][0] + words[1][0]).toUpperCase();
-    }
+    if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
     return name.substring(0, 2).toUpperCase();
   }
  
@@ -130,11 +122,6 @@ export class ProjectListComponent implements OnInit {
  
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    };
-    return date.toLocaleDateString('es-ES', options);
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
   }
 }

@@ -5,9 +5,17 @@
       <h1 class="projects-title">Projects</h1>
       <p class="projects-subtitle">Manage and monitor all active initiatives.</p>
     </div>
-    <button class="btn-create-project" (click)="openCreateModal()">
-      + Create New Project
-    </button>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <button class="btn-create-project" (click)="openCreateModal()">
+        + Nuevo Proyecto
+      </button>
+      <button class="btn-logout" (click)="logout()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3M10 11l3-3-3-3M5 8h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Salir
+      </button>
+    </div>
   </div>
  
   <!-- Search and Filters -->

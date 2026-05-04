@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:3000';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  // Reemplaza esto con la URL base de tu backend local
+  
 
   login(credentials: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${API_URL}/login`, credentials).pipe(

@@ -1,0 +1,227 @@
+<div class="board-container">
+  <!-- Header -->
+  <div class="board-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div>
+        <div class="breadcrumb">Proyectos / {{ projectName }}</div>
+        <h1 class="board-title">Tablero Kanban</h1>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="ticket-count">{{ totalTickets }} ticket(s)</div>
+      <button class="btn-create-ticket" (click)="openCreateModal()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Nuevo Ticket
+      </button>
+    </div>
+  </div>
+
+  <!-- Alert -->
+  @if (alertMessage()) {
+    <div class="alert" [class.alert-success]="alertType() === 'success'" [class.alert-error]="alertType() === 'error'">
+      {{ alertMessage() }}
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando tickets...</p>
+    </div>
+  } @else {
+    <!-- Kanban Board -->
+    <div class="kanban-board">
+      @for (column of columns; track column.id) {
+        <div class="kanban-column">
+          <!-- Column Header -->
+          <div class="column-header" [style.border-top-color]="columnColors[column.id]">
+            <div class="column-title-row">
+              <span class="column-dot" [style.background]="columnColors[column.id]"></span>
+              <span class="column-title">{{ column.title }}</span>
+              <span class="column-count" [style.background]="columnBg[column.id]" [style.color]="columnColors[column.id]">
+                {{ column.tickets.length }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Tickets -->
+          <div class="column-body">
+            @for (ticket of column.tickets; track ticket.ticketId) {
+              <div class="ticket-card">
+                <div class="ticket-top">
+                  <span class="ticket-id">#{{ ticket.ticketId }}</span>
+                  <div class="ticket-actions-row">
+                    <button class="btn-icon" (click)="openDetail(ticket)" title="Ver detalles">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M1 7s2-4 6-4 6 4 6 4-2 4-6 4-6-4-6-4z" stroke="currentColor" stroke-width="1.5"/>
+                      </svg>
+                    </button>
+                    <button class="btn-icon" (click)="openEditModal(ticket)" title="Editar">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                    <button class="btn-icon btn-delete" (click)="deleteTicket(ticket)" title="Eliminar">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 3h10M5 3V2h4v1M4 3v8h6V3H4z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <h4 class="ticket-title">{{ ticket.title }}</h4>
+                <p class="ticket-desc">{{ ticket.description }}</p>
+
+                <div class="ticket-footer">
+                  <div class="assigned-badge">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <circle cx="6" cy="4" r="2" stroke="#9CA3AF" stroke-width="1.2"/>
+                      <path d="M1 10c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#9CA3AF" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                    <span>{{ getMemberName(ticket.assignedUserId) }}</span>
+                  </div>
+                  <!-- Move buttons -->
+                  <div class="move-actions">
+                    @for (next of getNextStates(ticket.state); track next.state) {
+                      <button class="btn-move" (click)="changeState(ticket, next.state)" [title]="'Mover a ' + next.label">
+                        → {{ next.label }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (column.tickets.length === 0) {
+              <div class="empty-column">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect x="6" y="6" width="24" height="24" rx="4" stroke="#E5E7EB" stroke-width="2"/>
+                  <path d="M12 18h12M18 12v12" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>Sin tickets</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Create/Edit Ticket Modal -->
+@if (showTicketModal) {
+  <div class="modal-overlay" (click)="closeTicketModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditMode ? 'Editar Ticket' : 'Crear Nuevo Ticket' }}</h3>
+        <button class="btn-close-modal" (click)="closeTicketModal()">✕</button>
+      </div>
+
+      @if (modalError) {
+        <div class="alert alert-error" style="margin-bottom: 16px;">{{ modalError }}</div>
+      }
+
+      <form [formGroup]="ticketForm" (ngSubmit)="onSubmitTicket()">
+        <div class="form-group">
+          <label class="form-label">Título *</label>
+          <input type="text" class="form-input" formControlName="title" placeholder="Título del ticket"
+            [class.invalid]="ticketForm.get('title')?.invalid && ticketForm.get('title')?.touched">
+          @if (ticketForm.get('title')?.hasError('required') && ticketForm.get('title')?.touched) {
+            <span class="field-error">El título es requerido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Descripción * 
+            <span class="char-count" [class.over]="descLength > 300">{{ descLength }}/300</span>
+          </label>
+          <textarea class="form-input form-textarea" formControlName="description"
+            placeholder="Describe el ticket..." rows="3"
+            [class.invalid]="ticketForm.get('description')?.invalid && ticketForm.get('description')?.touched"></textarea>
+          @if (ticketForm.get('description')?.hasError('required') && ticketForm.get('description')?.touched) {
+            <span class="field-error">La descripción es requerida</span>
+          }
+          @if (ticketForm.get('description')?.hasError('maxlength')) {
+            <span class="field-error">Máximo 300 caracteres</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Asignar a (ID de Usuario) *</label>
+          @if (projectMembers.length > 0) {
+            <select class="form-input" formControlName="assignedUserId">
+              <option value="">Seleccionar miembro...</option>
+              @for (member of projectMembers; track member.userId) {
+                <option [value]="member.userId">{{ member.name }} (ID: {{ member.userId }})</option>
+              }
+            </select>
+          } @else {
+            <input type="number" class="form-input" formControlName="assignedUserId" placeholder="Ej: 3"
+              [class.invalid]="ticketForm.get('assignedUserId')?.invalid && ticketForm.get('assignedUserId')?.touched">
+          }
+          @if (ticketForm.get('assignedUserId')?.hasError('required') && ticketForm.get('assignedUserId')?.touched) {
+            <span class="field-error">El ID del usuario asignado es requerido</span>
+          }
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeTicketModal()">Cancelar</button>
+          <button type="submit" class="btn-submit" [disabled]="ticketForm.invalid || isSubmitting">
+            @if (isSubmitting) { Guardando... } @else { {{ isEditMode ? 'Actualizar' : 'Crear Ticket' }} }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Ticket Detail Modal -->
+@if (showDetailModal && detailTicket) {
+  <div class="modal-overlay" (click)="closeDetail()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="ticket-id-detail">#{{ detailTicket.ticketId }}</span>
+          <h3 style="margin: 4px 0 0;">{{ detailTicket.title }}</h3>
+        </div>
+        <button class="btn-close-modal" (click)="closeDetail()">✕</button>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Estado</span>
+          <span class="state-pill" [class]="'state-' + detailTicket.state">{{ detailTicket.state }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Asignado a</span>
+          <span class="detail-value">{{ getMemberName(detailTicket.assignedUserId) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Creado</span>
+          <span class="detail-value">{{ formatDate(detailTicket.createdAt) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Actualizado</span>
+          <span class="detail-value">{{ formatDate(detailTicket.updatedAt) }}</span>
+        </div>
+        <div class="detail-description">
+          <span class="detail-label">Descripción</span>
+          <p>{{ detailTicket.description }}</p>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top: 24px;">
+        <button class="btn-cancel" (click)="closeDetail()">Cerrar</button>
+        <button class="btn-submit" (click)="closeDetail(); openEditModal(detailTicket!)">Editar</button>
+      </div>
+    </div>
+  </div>
+}

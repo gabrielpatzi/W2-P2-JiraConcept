@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
   imports: [ReactiveFormsModule, RouterLink, CommonModule],
   templateUrl: './login.component.html'
 })
+
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -31,7 +32,7 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigate(['/projects']);
+          this.router.navigate(['/projects']); //aqui navegamos al dashboard principal del usuario logeado con exito
         },
         error: (err) => {
           this.isLoading.set(false);
