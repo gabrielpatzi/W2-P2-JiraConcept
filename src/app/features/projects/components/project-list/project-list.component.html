@@ -95,12 +95,12 @@
           <p class="project-description">{{ project.description }}</p>
  
           <div class="project-meta">
-            @if (formatDate(project.createdAt)) {
+            @if (formatDate(project.created_at)) {
               <div class="meta-item">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M8 1v6l4 2M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
-                <span>Creado: {{ formatDate(project.createdAt) }}</span>
+                <span>Creado: {{ formatDate(project.created_at) }}</span>
               </div>
             }
  

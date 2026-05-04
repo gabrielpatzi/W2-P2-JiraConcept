@@ -3,8 +3,8 @@ export interface Project {
   name: string;
   description: string;
   ownerId: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
   collaborators?: { email: string; avatar: string }[];
 }
  

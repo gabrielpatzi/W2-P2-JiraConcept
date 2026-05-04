@@ -15,8 +15,8 @@ export interface Project {
   name: string;
   description: string;
   ownerId: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ProjectsResponse {
@@ -40,8 +40,8 @@ export interface Ticket {
   description: string;
   state: TicketState;
   assignedUserId: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TicketsResponse {
