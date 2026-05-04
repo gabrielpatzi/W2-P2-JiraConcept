@@ -1,0 +1,147 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">{{ isEditing ? 'Editar Proyecto' : 'Crear Nuevo Proyecto' }}</h2>
+        <p class="modal-subtitle">
+          {{ isEditing ? 'Modifica los detalles de tu proyecto.' : 'Configura los detalles para tu nuevo entorno de trabajo.' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Mensajes -->
+    @if (successMessage) {
+      <div class="alert alert-success">
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Form -->
+    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      <!-- Nombre del Proyecto -->
+      <div class="form-group">
+        <label class="form-label">
+          Nombre del Proyecto <span class="required">*</span>
+        </label>
+        <div class="input-with-icon">
+          <svg class="input-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 7h14M3 12h14M7 3v14" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input
+            type="text"
+            class="form-input"
+            formControlName="name"
+            placeholder="ej. Rediseño de Sitio Web"
+            [class.is-invalid]="name?.invalid && name?.touched">
+        </div>
+
+        @if (name?.invalid && name?.touched) {
+          <div class="invalid-feedback">
+            @if (name?.errors?.['required']) {
+              El nombre del proyecto es obligatorio
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label">
+          Descripción <span class="optional">(Opcional)</span>
+        </label>
+        <textarea
+          class="form-textarea"
+          formControlName="description"
+          rows="4"
+          placeholder="Describe brevemente los objetivos y el alcance de este proyecto..."
+          [class.is-invalid]="description?.invalid && description?.touched"
+          maxlength="100"></textarea>
+
+        <div class="char-counter">
+          {{ descriptionLength }}/100
+        </div>
+
+        @if (description?.invalid && description?.touched) {
+          <div class="invalid-feedback">
+            @if (description?.errors?.['required']) {
+              La descripción es obligatoria
+            }
+            @if (description?.errors?.['maxlength']) {
+              Máximo 100 caracteres
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Colaboradores -->
+      <div class="form-group">
+        <label class="form-label">Añadir/Eliminar Colaboradores</label>
+
+        <div class="collaborator-input-group">
+          <input
+            type="email"
+            class="form-input"
+            [formControl]="searchEmailControl"
+            placeholder="Buscar por correo electrónico...">
+          <button
+            type="button"
+            class="btn-add-collaborator"
+            (click)="addCollaborator()"
+            [disabled]="!searchEmailControl.value?.trim()">
+            Añadir
+          </button>
+        </div>
+
+        <!-- Lista de colaboradores -->
+        @if (collaborators.length > 0) {
+          <div class="collaborators-list">
+            @for (collaborator of collaborators; track collaborator.email) {
+              <div class="collaborator-chip">
+                <div class="collaborator-avatar">
+                  {{ collaborator.avatar }}
+                </div>
+                <span class="collaborator-email">{{ collaborator.email }}</span>
+                <button
+                  type="button"
+                  class="btn-remove-collaborator"
+                  (click)="removeCollaborator(collaborator.email)">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-cancel"
+          (click)="close()"
+          [disabled]="isSubmitting">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="projectForm.invalid || isSubmitting">
+          @if (isSubmitting) {
+            <span>{{ isEditing ? 'Actualizando...' : 'Creando...' }}</span>
+          } @else {
+            <span>{{ isEditing ? 'Actualizar Proyecto' : 'Crear Proyecto' }}</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

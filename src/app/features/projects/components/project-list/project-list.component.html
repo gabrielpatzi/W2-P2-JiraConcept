@@ -1,0 +1,137 @@
+<div class="projects-container">
+  <!-- Header -->
+  <div class="projects-header">
+    <div class="header-content">
+      <h1 class="projects-title">Projects</h1>
+      <p class="projects-subtitle">Manage and monitor all active initiatives.</p>
+    </div>
+    <button class="btn-create-project" (click)="openCreateModal()">
+      + Create New Project
+    </button>
+  </div>
+ 
+  <!-- Search and Filters -->
+  <div class="projects-toolbar">
+    <div class="search-box">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4.35-4.35" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Search projects..."
+        (input)="onSearch($event)">
+    </div>
+ 
+    <div class="toolbar-actions">
+      <button class="btn-filter">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M2 5h16M5 10h10M8 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Filter
+      </button>
+ 
+      <div class="view-toggle">
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'grid'"
+          (click)="viewMode = 'grid'">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <rect x="3" y="3" width="6" height="6" rx="1"/>
+            <rect x="11" y="3" width="6" height="6" rx="1"/>
+            <rect x="3" y="11" width="6" height="6" rx="1"/>
+            <rect x="11" y="11" width="6" height="6" rx="1"/>
+          </svg>
+        </button>
+        <button 
+          class="view-btn" 
+          [class.active]="viewMode === 'list'"
+          (click)="viewMode = 'list'">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <rect x="3" y="4" width="14" height="2" rx="1"/>
+            <rect x="3" y="9" width="14" height="2" rx="1"/>
+            <rect x="3" y="14" width="14" height="2" rx="1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Projects Grid -->
+  <div class="projects-grid" [class.list-view]="viewMode === 'list'">
+    @for (project of filteredProjects; track project.projectId) {
+      <div class="project-card">
+        <!-- Card Header -->
+        <div class="card-header">
+          <div class="project-avatar" [style.background-color]="project.avatarColor">
+            {{ getProjectInitials(project.name) }}
+          </div>
+          <span class="status-badge" [ngClass]="getStatusClass(project.status)">
+            {{ project.status }}
+          </span>
+        </div>
+ 
+        <!-- Card Body -->
+        <div class="card-body">
+          <h3 class="project-name">{{ project.name }}</h3>
+          <p class="project-description">{{ project.description }}</p>
+ 
+          <div class="project-meta">
+            <div class="meta-item">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1v6l4 2M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14z" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <span>Created: {{ formatDate(project.createdAt) }}</span>
+            </div>
+ 
+            <div class="meta-item">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="5" r="2.5" stroke="#9CA3AF" stroke-width="1.5"/>
+                <path d="M2 13c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#9CA3AF" stroke-width="1.5"/>
+              </svg>
+              <span>+{{ project.memberCount }}</span>
+            </div>
+          </div>
+        </div>
+ 
+        <!-- Card Actions -->
+        <div class="card-actions">
+          <button class="btn-primary" (click)="viewProjectDetails(project.projectId)">
+            Ver Detalles del Proyecto
+          </button>
+          
+          <div class="action-buttons">
+            <button class="btn-secondary" (click)="editProject(project.projectId)">
+              Editar
+            </button>
+            <button class="btn-secondary" (click)="viewTickets(project.projectId)">
+              Ver Tickets
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+ 
+    @if (filteredProjects.length === 0) {
+      <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="30" stroke="#E5E7EB" stroke-width="4"/>
+          <path d="M32 20v24M20 32h24" stroke="#E5E7EB" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <h3>No projects found</h3>
+        <p>Try adjusting your search or create a new project</p>
+      </div>
+    }
+  </div>
+</div>
+ 
+<!-- Create Project Modal (placeholder, lo crearemos después) -->
+@if (showCreateModal) {
+  <div class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2>Create New Project</h2>
+      <p>Modal content coming soon...</p>
+      <button class="btn-primary" (click)="closeCreateModal()">Close</button>
+    </div>
+  </div>
+}
